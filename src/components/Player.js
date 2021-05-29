@@ -1,10 +1,29 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"; 
 import {faPlay,faAngleLeft,faAngleRight, faPause} from "@fortawesome/free-solid-svg-icons";
+import {playAudio} from "../util";
 
-const Player = ({currentSong, setCurrentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSongInfo, songs}) => {
 
-    // Use Ref 
+const Player = ({currentSong, setCurrentSong, isPlaying, setIsPlaying, audioRef, songInfo, setSongInfo, setSongs, songs}) => {
+
+    // Use Effect 
+    useEffect(() => {
+        const newSongs = songs.map((song) => {
+            if(song.id === currentSong.id){
+                return {
+                    ...song, 
+                    active: true,
+                }
+            } else {
+                return {
+                    ...song,
+                    active: false,
+                }
+            }
+        });
+        setSongs(newSongs);
+    },[currentSong]);
+
     // Event Handlers 
     const playSongHandler = () => {
         if(isPlaying){
@@ -37,12 +56,13 @@ const Player = ({currentSong, setCurrentSong, isPlaying, setIsPlaying, audioRef,
         if(direction === "skip-back"){
             if((currentIndex - 1) % songs.length === -1){
                 setCurrentSong(songs[songs.length - 1]);
+                playAudio(isPlaying, audioRef);
                 return;
             }
             setCurrentSong(songs[(currentIndex - 1) % songs.length]);
 
         }
-        
+        playAudio(isPlaying, audioRef);
     };
 
     // State 
@@ -57,7 +77,7 @@ const Player = ({currentSong, setCurrentSong, isPlaying, setIsPlaying, audioRef,
                 value={songInfo.currentTime} 
                 type="range" onChange={dragHandler} 
                 />
-                <p>{getTime(songInfo.duration)}</p>
+                <p>{songInfo.duration ? getTime(songInfo.duration) : "0:00"}</p>
             </div>
             <div className="play-control">
                 <FontAwesomeIcon onClick={() => skipTrackHandler("skip-back")}className="skip-back" size="2x" icon={faAngleLeft} />

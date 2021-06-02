@@ -1,9 +1,9 @@
 import React from "react";
 
-const Song = ({currentSong}) => {
+const Song = ({isPlaying, currentSong}) => {
     return (
         <div className="song-container">
-            <img alt={currentSong.name} src={currentSong.cover}></img>
+            <img class={`${isPlaying ? "song-active" : ""}`} alt={currentSong.name} src={currentSong.cover}></img>
             <h2>{currentSong.name}</h2>
             <h3>{currentSong.artist}</h3>
         </div>
